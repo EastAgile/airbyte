@@ -60,7 +60,7 @@ class GraphQLRequestOptionsProvider(InterpolatedRequestOptionsProvider):
 
         arguments = self._get_object_arguments(**object_arguments)
         arguments = f"({arguments})" if arguments else ""
-        fields    = ','.join(fields)
+        fields    = ",".join(fields)
 
         return f"{object_name}{arguments}{{{fields}}}"
 
