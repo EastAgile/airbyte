@@ -26,7 +26,7 @@ class GraphQLRequestOptionsProvider(InterpolatedRequestOptionsProvider):
         Ensure given object `o` is of type `t`
         """
         if not isinstance(o, t):
-            raise Exception(f"{type(o)} {o} is not of type {t}")
+            raise TypeError(f"{type(o)} {o} is not of type {t}")
 
     def _get_schema_root_properties(self):
         schema_path = os.path.join(os.path.abspath(os.curdir), "source_monday", f"schemas/{self.name}.json")
