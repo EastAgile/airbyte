@@ -11,6 +11,7 @@ import logging
 from airbyte_cdk.models import SyncMode
 from airbyte_cdk.sources import AbstractSource
 from airbyte_cdk.sources.streams import Stream
+from airbyte_cdk.sources.streams.core import IncrementalMixin
 from airbyte_cdk.sources.streams.http import HttpStream
 from airbyte_cdk.sources.streams.http.auth import HttpAuthenticator
 
@@ -87,7 +88,48 @@ class ProjectBasedStream(PivotalTrackerStream):
             yield {"project_id": project_id}
 
 
-class Stories(ProjectBasedStream):
+class IncrementalPivotalStream(ProjectBasedStream, IncrementalMixin):
+    state_checkpoint_interval = 100
+    cursor_filter = "updated_after"
+
+    def __init__(self, project_ids: List[str], **kwargs):
+        super().__init__(project_ids=project_ids, **kwargs)
+        self._cursor_value = ""
+
+    @property
+    def cursor_field(self) -> str:
+        return "updated_at"
+
+    @property
+    def state(self):
+        return {self.cursor_field: self._cursor_value} if self._cursor_value else {}
+
+    @state.setter
+    def state(self, value):
+        self._cursor_value = value.get(self.cursor_field, "1970-01-01T00:00:00")
+
+    def request_params(
+        self, stream_state: Mapping[str, Any], stream_slice: Mapping[str, Any] = None, next_page_token: Mapping[str, Any] = None
+    ) -> MutableMapping[str, Any]:
+        params = super().request_params(stream_state=stream_state, stream_slice=stream_slice, next_page_token=next_page_token)
+        params[self.cursor_filter] = stream_state.get(self.cursor_field)
+        return params
+
+    def read_records(
+        self,
+        sync_mode: SyncMode,
+        cursor_field: List[str] = None,
+        stream_slice: Mapping[str, Any] = None,
+        stream_state: Mapping[str, Any] = None,
+    ) -> Iterable[Mapping[str, Any]]:
+        for record in super().read_records(
+            sync_mode=sync_mode, cursor_field=cursor_field, stream_slice=stream_slice, stream_state=stream_state
+        ):
+            yield record
+            self._cursor_value = max(record[self.cursor_field], self._cursor_value)
+
+
+class Stories(IncrementalPivotalStream):
     subpath = "stories"
 
 
@@ -107,9 +149,14 @@ class Epics(ProjectBasedStream):
     subpath = "epics"
 
 
-class Activity(ProjectBasedStream):
+class Activity(IncrementalPivotalStream):
     subpath = "activity"
     primary_key = "guid"
+    cursor_filter = "occurred_after"
+
+    @property
+    def cursor_field(self) -> str:
+        return "occurred_at"
 
     def parse_response(self, response: requests.Response, **kwargs) -> Iterable[Mapping]:
         for record in super().parse_response(response, **kwargs):

@@ -4,7 +4,8 @@
     "current_state": "unstarted",
     "labels": [],
     "tasks": [],
-    "comments": []
+    "comments": [],
+    "updated_at": "2022-03-08T12:00:00Z"
   },
   {
     "id": 566,
@@ -20,14 +21,16 @@
       }
     ],
     "tasks": [],
-    "comments": []
+    "comments": [],
+    "updated_at": "2022-03-08T12:00:00Z"
   },
   {
     "id": 552,
     "current_state": "unstarted",
     "labels": [],
     "tasks": [],
-    "comments": []
+    "comments": [],
+    "updated_at": "2022-03-08T12:00:00Z"
   },
   {
     "id": 555,
@@ -44,6 +47,7 @@
         "updated_at": "2022-03-08T12:00:00Z",
         "story_id": 555
       }
-    ]
+    ],
+    "updated_at": "2022-03-08T12:00:00Z"
   }
 ]

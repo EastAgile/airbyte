@@ -1,0 +1,24 @@
+[
+  {
+    "type": "STREAM",
+    "stream": {
+      "stream_state": {
+        "occurred_at": "3000-12-06T00:00:00Z"
+      },
+      "stream_descriptor": {
+        "name": "activity"
+      }
+    }
+  },
+  {
+    "type": "STREAM",
+    "stream": {
+      "stream_state": {
+        "updated_at": "3000-12-06T00:00:00Z"
+      },
+      "stream_descriptor": {
+        "name": "stories"
+      }
+    }
+  }
+]
